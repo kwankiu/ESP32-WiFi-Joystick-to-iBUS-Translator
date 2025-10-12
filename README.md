@@ -1,5 +1,8 @@
 # **🎮 ESP32 WiFi Joystick to iBUS Translator**
 
+![maxresdefault](https://github.com/user-attachments/assets/15750d6d-d88d-493e-8f3e-73556b4bab8a)
+# **https://youtu.be/UvT1o2FiCCM**
+
 | Project Type | RC Translator | Board | ESP32 | Wireless | WiFi |
 | :---- | :---- | :---- | :---- | :---- | :---- |
 | **Input** | UDP Packets | **Output** | iBUS Protocol | **Interface** | Mobile App \+ Web |
