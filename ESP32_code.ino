@@ -3,6 +3,9 @@
 #include <WiFiUdp.h>
 #include <WebSocketsServer.h>
 
+// Requires the arduinoWebSockets library
+// https://github.com/Links2004/arduinoWebSockets
+
 // ================== WiFi AP Config ==================
 const char *ssid = "ESP_Drone";
 const char *password = "12345678";
