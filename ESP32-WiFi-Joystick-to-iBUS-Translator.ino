@@ -154,6 +154,7 @@ String buildHTML() {
   html += "  }";
   html += "} ";
   html += "setInterval(update, 1000); update();";
+  html += "</script></body></html>";
   return html;
 }
 
