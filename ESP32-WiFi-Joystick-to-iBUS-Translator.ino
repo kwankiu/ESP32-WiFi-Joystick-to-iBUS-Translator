@@ -137,12 +137,23 @@ String buildHTML() {
   html += "requestAnimationFrame(pollGamepad);";
 
   html += "function toggle(ch){fetch('/aux?ch='+ch);} ";
-  html += "async function update(){let r=await fetch('/status');let j=await r.json();";
-  html += "document.getElementById('status').innerHTML=";
-  html += "'Throttle: '+j.throttle+'% | Roll: '+j.roll+'% | Pitch: '+j.pitch+'% | Yaw: '+j.yaw+'%';";
-  html += "for(let i=1;i<=4;i++){document.getElementById('aux'+i).checked=j['aux'+i];}}";
-  html += "setInterval(update,1000); update();";
-  html += "</script></body></html>";
+  html += "async function update(){";
+  html += "  try {";
+  html += "    let controller = new AbortController();";
+  html += "    let t = setTimeout(() => controller.abort(), 2000);";
+  html += "    let r = await fetch('/status', {signal: t.signal});";
+  html += "    clearTimeout(t);";
+  html += "    if(!r.ok) throw 0;";
+  html += "    let j = await r.json();";
+  html += "    document.getElementById('status').style.color = 'white';";
+  html += "    document.getElementById('status').innerHTML = 'Throttle: '+j.throttle+'% | Roll: '+j.roll+'% | Pitch: '+j.pitch+'% | Yaw: '+j.yaw+'%';";
+  html += "    for(let i=1;i<=4;i++){document.getElementById('aux'+i).checked=j['aux'+i];}";
+  html += "  } catch(e) {";
+  html += "    document.getElementById('status').style.color = '#ff1744';";
+  html += "    document.getElementById('status').innerHTML = '<strong>[ RC LINK LOST / DISCONNECTED ]</strong>';";
+  html += "  }";
+  html += "} ";
+  html += "setInterval(update, 1000); update();";
   return html;
 }
 
