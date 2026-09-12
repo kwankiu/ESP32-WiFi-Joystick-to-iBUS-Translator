@@ -56,8 +56,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
     // Map directly to AETR (Roll, Pitch, Yaw, Throttle)
     channels[0] = wsChannels[2]; // Roll (Right Stick X)
     channels[1] = wsChannels[3]; // Pitch (Right Stick Y)
-    channels[2] = wsChannels[1]; // Yaw (Left Stick X)
-    channels[3] = wsChannels[0]; // Throttle (Left Stick Y)
+    channels[2] = wsChannels[0]; // Throttle (Left Stick Y)
+    channels[3] = wsChannels[1]; // Yaw (Left Stick X)
 
     lastPacketTime = millis();
   }
@@ -110,8 +110,6 @@ String buildHTML() {
   // Handling unmapped Raw Gamepad fallback (on macOS with Chrome, my 8bitdo axis 0 and 1 is swapped, right stick is axes 2 and 5)
   // You can change this mapping based on your controller's behavior if needed.
   html += "      if (gp.axes.length > 4 && gp.mapping !== 'standard') {";
-  html += "        lx = gp.axes[1];";
-  html += "        ly = gp.axes[0];";
   html += "        rx = gp.axes[2];";
   html += "        ry = gp.axes[5] !== undefined ? gp.axes[5] : gp.axes[3];";
   html += "      }";
@@ -164,10 +162,10 @@ void handleAux() {
 
 void handleStatus() {
   String json = "{";
-  json += "\"throttle\":" + String((channels[3] - 1000) * 100 / 1000) + ",";
+  json += "\"throttle\":" + String((channels[2] - 1000) * 100 / 1000) + ",";
   json += "\"roll\":" + String((channels[0] - 1000) * 100 / 1000) + ",";
   json += "\"pitch\":" + String((channels[1] - 1000) * 100 / 1000) + ",";
-  json += "\"yaw\":" + String((channels[2] - 1000) * 100 / 1000);
+  json += "\"yaw\":" + String((channels[3] - 1000) * 100 / 1000);
   for (int i = 1; i <= 4; i++) {
     json += ",\"aux" + String(i) + "\":" + (auxState[i - 1] ? "true" : "false");
   }
