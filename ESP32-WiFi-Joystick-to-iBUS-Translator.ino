@@ -31,6 +31,7 @@ char incomingPacket[255];
 // ================== State & Watchdog ==================
 bool auxState[4] = {false, false, false, false};
 unsigned long lastPacketTime = 0;
+unsigned long lastIBUSFrameTime = 0;
 
 void setAux(int auxNum, bool state) {
   if (auxNum >= 1 && auxNum <= 4) {
@@ -217,11 +218,11 @@ void setup() {
 
 // ================== Loop ==================
 void loop() {
-  // Service Web & Socket tasks
+  // 1. Process incoming WebSocket packets IMMEDIATELY with zero delay
   server.handleClient();
   webSocket.loop();
 
-  // Process legacy UDP packets if present
+  // 2. Process legacy UDP packets
   int packetSize = udp.parsePacket();
   if (packetSize) {
     int len = udp.read(incomingPacket, 254);
@@ -245,11 +246,19 @@ void loop() {
     }
   }
 
-  // Failsafe: Reset Throttle to 1000 if connection drops for > 500ms
+  // 3. Failsafe: Reset Throttle to 1000 if connection drops for > 500ms
   if (millis() - lastPacketTime > 500) {
     channels[3] = 1000;
   }
 
-  sendIBUS();
-  delay(5);
+  // 4. Send iBUS frames on a non-blocking 7ms timer (~142 Hz)
+  // This matches standard FlySky iBUS frame output perfectly without blocking the loop.
+  unsigned long now = millis();
+  if (now - lastIBUSFrameTime >= 7) {
+    lastIBUSFrameTime = now;
+    sendIBUS();
+  }
+
+  // 5. Non-blocking yield to keep WiFi task / Watchdog happy without adding delays
+  yield();
 }
